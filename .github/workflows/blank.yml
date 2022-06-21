@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: autoActionTest
 
 # Controls when the workflow will run
 on:
@@ -18,28 +18,16 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # npm install
-      - name: npm install and build
-        run: |
-          npm install
-          npm run build
-        env:
-          CI: true
-      # Deploy
-      - name: Deploy
-        uses: easingthemes/ssh-deploy@v2.0.7
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
-          ARGS: "-avz --delete"
-          SOURCE: "[Current File Dir]"
-          REMOTE_HOST: "[Domain]"
-          REMOTE_USER: "[UserName]"
-          TARGET: "[Server Dir]"
-
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Build and Deploy
+      uses: JamesIves/github-pages-deploy-action@master
+      env:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: pages
+        FOLDER: build
+        BUILD_SCRIPT: npm install && npm run build
