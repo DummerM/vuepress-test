@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: autoActionTest
 
 # Controls when the workflow will run
 on:
@@ -19,27 +19,21 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
 
-      # npm install
-      - name: npm install and build
+      - name: Install and Build
+        uses: actions/setup-node@v2
+          with:
+            node-version: '14'
         run: |
-          npm install
+          npm ci
+          npm install -D vuepress
           npm run build
-        env:
-          CI: true
-      # Deploy
-      - name: Deploy
-        uses: easingthemes/ssh-deploy@v2.0.7
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
-          ARGS: "-avz --delete"
-          SOURCE: "[Current File Dir]"
-          REMOTE_HOST: "[Domain]"
-          REMOTE_USER: "[UserName]"
-          TARGET: "[Server Dir]"
 
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: pages # The branch the action should deploy to.
+          folder: . # The folder the action should deploy.
